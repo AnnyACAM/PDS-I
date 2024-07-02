@@ -46,7 +46,7 @@ int main() {
     FILE* arquivo = fopen(name_file, "r");
 
     if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo");
+        printf("Erro ao abrir o arquivo\n");
         return ERRO;
     }
 
@@ -54,7 +54,7 @@ int main() {
 
     // Le a primeira linha do arquivo e verifica se foram lidos 2 numeros
     if (fscanf(arquivo, "%d %d", &qntd_pokemon[PLAYER1], &qntd_pokemon[PLAYER2]) != 2) {
-        printf("Erro ao ler do arquivo, os dados fornecidos nao seguem o padrao esperado");
+        printf("Erro ao ler do arquivo, os dados fornecidos nao seguem o padrao esperado\n");
         fclose(arquivo);
         return ERRO;
     }
@@ -62,7 +62,7 @@ int main() {
     for (int i = 0; i < PLAYERS; i++) {
         // Verifica a quantidade de pokemons informados
         if (qntd_pokemon[i] > 100 || qntd_pokemon[i] <= 0) {
-            printf("Numero de pokemons para cadastro invalido");
+            printf("Numero de pokemons para cadastro invalido\n");
             fclose(arquivo);
             return ERRO;
         }
@@ -77,7 +77,7 @@ int main() {
     Pokemon *player2 = malloc(qntd_pokemon[PLAYER2] * sizeof(Pokemon));
 
     if (player1 == NULL || player2 == NULL) {
-        printf("Erro ao alocar memoria");
+        printf("Erro ao alocar memoria\n");
         fclose(arquivo);
         return ERRO;
     }
@@ -101,7 +101,7 @@ int main() {
 
         // Verifica se a linha segue o padrao esperado
         if (conteudo != 5) {
-            printf("Erro ao ler do arquivo, os dados fornecidos nao seguem o padrao esperado");
+            printf("Erro ao ler do arquivo, os dados fornecidos nao seguem o padrao esperado\n");
             fclose(arquivo);
             return ERRO;
         }
@@ -111,7 +111,7 @@ int main() {
 
     // Verifica se a quantidade de pokemons cadastrados e igual a quantidade de pokemons informados no arquivo
     if (adicionados != total) {
-        printf("Numero incorreto de pokemons informado");
+        printf("Numero incorreto de pokemons informado\n");
         fclose(arquivo);
         return ERRO;
     }
@@ -132,23 +132,19 @@ int main() {
             Batalha(&player2[p2], &player1[p1]);
         }
 
-        // Verifica se ambos os Pokemons sobreviveram para trocar o turno
-        if (player1[p1].vida > 0 && player2[p2].vida > 0) {
-            player_turno = 1 - player_turno; // Alterna entre 0 e 1 para trocar o turno
-        }
-
         // Verifica se um Pokemon foi derrotado
         if (player2[p2].vida <= 0) {
             printf("%s venceu %s\n", player1[p1].nome, player2[p2].nome);
             p2++; // Incrementa o Indice do Pokemon do Player 2 derrotado
-            player_turno = PLAYER1; // Troca para o turno do Player 1
         }
         
         if (player1[p1].vida <= 0) {
             printf("%s venceu %s\n", player2[p2].nome, player1[p1].nome);
             p1++; // Incrementa o Indice do Pokemon do Player 1 derrotado
-            player_turno = PLAYER2; // Troca para o turno do Player 2
         }
+
+        // Alterna entre 0 e 1 para trocar o turno
+        player_turno = 1 - player_turno; 
     }
     
     /* --------------- DEFINE VENCEDOR ---------------*/
@@ -223,7 +219,7 @@ float bonusAtaque(char* tp_pokemon, char* tp_oponente) {
     };
     
     char pokemon = tp_pokemon[0], oponente = tp_oponente[0];
-    float fraco = 0.8, forte = 1.2, bonus = 1;
+    float fraco = 0.8, forte = 1.2, bonus = 1.0;
 
     // Verifica os tipos e aplica o bônus de ataque conforme a tabela
     for (int i = 0; i < 5; i++) {
@@ -243,6 +239,7 @@ void Batalha(Pokemon *pokemon, Pokemon *oponente) {
     
     // Calcula o dano
     if (pokemon->vida > 0 && oponente->vida > 0) {
+        
         float dano = (pokemon->ataque * bonusAtaque(pokemon->tipo, oponente->tipo)) - oponente->defesa;
 
         // Reduz a vida do oponente com base no dano calculado
